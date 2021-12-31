@@ -1,0 +1,38 @@
+{
+  "name": "nodejs-fastify-social-media-rest-api",
+  "version": "1.0.0",
+  "description": "Social Media RestAPI",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ExorTek/nodejs-fastify-social-media-rest-api.git"
+  },
+  "keywords": [
+    "social",
+    "media",
+    "rest",
+    "api",
+    "fastify",
+    "mongo"
+  ],
+  "author": "Mehmet Demirel",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ExorTek/nodejs-fastify-social-media-rest-api/issues"
+  },
+  "homepage": "https://github.com/ExorTek/nodejs-fastify-social-media-rest-api#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  },
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "fastify": "^3.25.3",
+    "fastify-express": "^0.3.3",
+    "mongoose": "^6.1.4",
+    "nanoid": "^3.1.30"
+  }
+}
