@@ -1,4 +1,4 @@
-const {register} = require('../../controllers/auth');
+const {register, login} = require('../../controllers/auth');
 const registerOptions = {
     type: 'object',
     properties: {
@@ -14,7 +14,8 @@ const loginOptions = {
     properties: {
         username: {type: 'string'},
         password: {type: 'string'}
-    }
+    },
+    handler: login
 };
 module.exports = {
     registerOptions,
