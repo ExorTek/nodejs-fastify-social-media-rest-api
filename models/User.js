@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const { nanoid } = require('nanoid');
+const {nanoid} = require('nanoid');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 
 const UserSchema = new Schema({
     _id: {
@@ -59,5 +61,29 @@ const UserSchema = new Schema({
         type: Boolean,
         default: false
     }
+});
+UserSchema.methods.generateAccessToken = function () {
+    const {JWT_SECRET_KEY, JWT_EXPIRE} = process.env;
+    const payload = {
+        id: this._id,
+        createdAt: this.createdAt
+    }
+    return jwt.sign(payload, JWT_SECRET_KEY, {
+        expiresIn: JWT_EXPIRE
+    });
+};
+UserSchema.pre('save', function (next) {
+    if (!this.isModified('password')) {
+        next()
+    }
+    bcrypt.genSalt(15, (error, salt) => {
+        if (error) next(error);
+        bcrypt.hash(this.password, salt, (error, hash) => {
+            if (error) next(error);
+            this.password = hash;
+            next();
+        });
+    });
+
 });
 module.exports = mongoose.model('User', UserSchema);
