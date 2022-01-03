@@ -1,4 +1,6 @@
-const {register, login} = require('../../controllers/auth');
+const {register, login, getUser} = require('../../controllers/auth');
+const {getAccessToRoute} = require("../../middlewares/authorization/auth");
+
 const registerOptions = {
     type: 'object',
     properties: {
@@ -17,7 +19,18 @@ const loginOptions = {
     },
     handler: login
 };
+const userOptions = {
+    handler: getUser,
+    type: 'object',
+    properties: {
+        id: {type: 'number'},
+        username: {type: 'string'},
+        name: {type: 'string'},
+
+    }
+};
 module.exports = {
     registerOptions,
-    loginOptions
+    loginOptions,
+    userOptions
 };
