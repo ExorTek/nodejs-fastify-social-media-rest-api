@@ -7,6 +7,13 @@ const customErrorHandler = require('./middlewares/error/customErrorHandler');
 dotenv.config({
     path: './config/env/config.env'
 });
+fastify.register(require('fastify-swagger'), {
+    exposeRoute: true,
+    routePrefix: '/',
+    swagger: {
+        info: {title: 'Fastify Social Media Api'}
+    }
+});
 connectDatabase();
 fastify.setErrorHandler(customErrorHandler);
 const PORT = process.env.PORT;
