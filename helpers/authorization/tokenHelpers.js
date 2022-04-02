@@ -1,4 +1,3 @@
-const CustomError = require('../error/CustomError');
 const sendJwtToClient = (user, reply) => {
     const token = user.generateAccessToken();
     const {JWT_COOKIE, NODE_ENV} = process.env;

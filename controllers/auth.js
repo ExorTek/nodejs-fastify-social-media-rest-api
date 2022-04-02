@@ -1,10 +1,9 @@
 const {validateUserInputLogin, validateUserInputRegister, comparePassword} = require('../helpers/input/inputHelper');
-const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const CustomError = require('../helpers/error/CustomError');
-const {sendJwtToClient} = require("../helpers/authorization/tokenHelpers");
-const {getAccessTokenFromHeaders, isTokenIncluded} = require("../helpers/authorization/tokenHelpers");
-
+const {sendJwtToClient,} = require("../helpers/authorization/tokenHelpers");
+const {getAccessRoute} = require('../middlewares/authorization/auth');
+const profileImageUpload = require('../middlewares/lib/profileImageUpload');
 const register = async (req, reply) => {
     const {username, name, email, password} = req.body;
     if (!validateUserInputRegister(username, name, email, password)) {
@@ -32,23 +31,9 @@ const login = async (req, reply) => {
     }
     sendJwtToClient(user, reply);
 };
+
 const getUser = async (req, reply) => {
-    const {JWT_SECRET_KEY} = process.env;
-    const accessToken = getAccessTokenFromHeaders(req);
-    if (!isTokenIncluded(req)) {
-        return new CustomError('You are not authorized to access this route', 401)
-    }
-
-    await jwt.verify(accessToken, JWT_SECRET_KEY, (err, decoded) => {
-        if (err) {
-            return new CustomError('You are mot authorized to access this route', 401);
-        }
-        req.user = {
-            id: decoded.id,
-            createdAt: decoded.createdAt
-        };
-
-    });
+    await getAccessRoute(req);
     const {id} = req.user.id;
     const user = await User.findOne({id});
     try {
@@ -67,9 +52,39 @@ const getUser = async (req, reply) => {
     } catch {
         return new CustomError('You dont have Token!', 401);
     }
-}
+};
+const logout = async (req, reply) => {
+    await getAccessRoute(req);
+    const {NODE_ENV} = process.env;
+    return reply
+        .code(200)
+        .setCookie("token", null, {
+            httpOnly: true,
+            expires: new Date(Date.now()),
+            secure: NODE_ENV === "development" ? false : true
+        })
+        .send({
+            success: true,
+            message: 'Logout Successfull'
+        });
+};
+const profilePhotoUpload = async (req, reply) => {
+    await getAccessRoute(req);
+    await User.findByIdAndUpdate(req.user.id, {
+        'profile_image': req.savedImage
+    }, {
+        new: true,
+        runValidators: true
+    });
+    return reply.code(200).send({
+        success: true,
+        message: 'Image upload successful',
+    });
+};
 module.exports = {
     register,
     login,
-    getUser
+    getUser,
+    logout,
+    profilePhotoUpload
 }

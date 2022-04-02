@@ -1,5 +1,5 @@
 const CustomError = require('../../helpers/error/CustomError');
-const customErrorHandler = async (error, req, reply, done) => {
+const customErrorHandler = async (error, req, reply) => {
     let customError = error;
     if (error.name === 'SyntaxError') {
         customError = new CustomError('Unexpected syntax error!', 400);
@@ -16,6 +16,7 @@ const customErrorHandler = async (error, req, reply, done) => {
     if (error.name === 'TypeError') {
         customError = new CustomError('Type Error: Type dont match! Check the value(s) you sent.', 400);
     }
+    console.log(error)
     reply.code(customError.status || 500).send({
         success: false,
         message: customError.message
